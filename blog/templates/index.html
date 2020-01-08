@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Index</title>
-</head>
-<body>
-    <h2>Hello, World!</h2>
-</body>
-</html>
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+    <h1 id="title">DIY Blog home</h1>
+    <p>Welcome to <em>DjangoDIYBlog</em>, a very basic Django website.</p>
+    <h2>Dynamic content</h2>
+    <p>THe site has the following record counts:</p>
+
+    <ul>
+        <li><strong>Authors: </strong>{{ num_author }}</li>
+        <li><strong>Posts: </strong>{{ num_post }}</li>
+        <li><strong>Comments: </strong>{{ num_comment }}</li>
+    </ul>
+
+{% endblock %}
