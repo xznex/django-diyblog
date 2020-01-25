@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.urls import reverse
 
 '''
 
-author > get_abs_url
-post > get_abs_url
-comment
+comments
+add post
 
 '''
 
@@ -20,6 +20,12 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse('blog', args=[str(self.id)])
+
+    class Meta:
+        ordering = ['-post_date']
+
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
@@ -27,6 +33,12 @@ class Author(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def get_absolute_url(self):
+        return reverse('author', args=[str(self.id)])
+
+    class Meta:
+        ordering = ['user', 'bio']
 
 
 class Comment(models.Model):
@@ -42,3 +54,6 @@ class Comment(models.Model):
         else:
             out_title = self.description
         return out_title
+
+    class Meta:
+        ordering = ['post_date']
