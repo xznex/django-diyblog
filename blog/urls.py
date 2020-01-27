@@ -6,6 +6,6 @@ urlpatterns = [
     url(r'^bloggers/$', views.AuthorsList.as_view(), name='bloggers'),
     url(r'^blogger/(?P<pk>\d+)$', views.AuthorDetail.as_view(), name='author'),
     url(r'^blogs/$', views.BlogsList.as_view(), name='blogs'),
-    url(r'^post/<int:pk>$', views.BlogDetail.as_view(), name='blog'),
-    url(r'^(?P<pk>\d+)/create$', views.create_comment, name='create_comment')
+    url(r'^post/(?P<pk>\d+)$', views.BlogDetail.as_view(), name='blog'),
+    url(r'^(?P<pk>\d+)/create$', views.CreateComment.as_view(), name='create_comment')
 ]

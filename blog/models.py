@@ -14,7 +14,7 @@ add post
 class Post(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(max_length=3000, help_text='your description')
-    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey('BlogAuthor', on_delete=models.SET_NULL, null=True)
     post_date = models.DateField(default=timezone.now)
 
     def __str__(self):
@@ -27,7 +27,7 @@ class Post(models.Model):
         ordering = ['-post_date']
 
 
-class Author(models.Model):
+class BlogAuthor(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
     bio = models.TextField(max_length=2000, help_text='your bio')
 
@@ -42,9 +42,9 @@ class Author(models.Model):
 
 
 class Comment(models.Model):
-    description = models.TextField(1000, help_text='your comment')
+    description = models.TextField(1000, help_text='Enter comment about blog here.')
     post_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
     def __str__(self):

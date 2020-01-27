@@ -1,15 +1,18 @@
 from django.shortcuts import render
-from .models import Post, Author, Comment
+from .models import Post, BlogAuthor, Comment
 from django.views import generic
 from django.shortcuts import get_object_or_404
-from .forms import CommentForm
-from django.shortcuts import redirect
+# from django.shortcuts import redirect
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
+# from django.http import HttpResponseRedirect
+# from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView
 
 
 def index(request):
-    num_author = Author.objects.count()
+    num_author = BlogAuthor.objects.count()
     num_post = Post.objects.all().count()
     num_comment = Comment.objects.all().count()
     return render(request, 'index.html', context={'num_author': num_author, 'num_post': num_post,
@@ -17,7 +20,7 @@ def index(request):
 
 
 class AuthorsList(generic.ListView):
-    model = Author
+    model = BlogAuthor
     paginate_by = 10
 
 
@@ -33,12 +36,12 @@ class AuthorDetail(generic.ListView):
 
     def get_queryset(self):
         id = self.kwargs['pk']
-        target_author = get_object_or_404(Author, pk=id)
+        target_author = get_object_or_404(BlogAuthor, pk=id)
         return Post.objects.filter(author=target_author)
 
     def get_context_data(self, **kwargs):
         context = super(AuthorDetail, self).get_context_data(**kwargs)
-        context['blogger'] = get_object_or_404(Author, pk=self.kwargs['pk'])
+        context['blogger'] = get_object_or_404(BlogAuthor, pk=self.kwargs['pk'])
         return context
 
 
@@ -46,17 +49,35 @@ class BlogDetail(generic.DetailView):
     model = Post
 
 
-@login_required(login_url='/accounts/login/')
-def create_comment(request, pk):
-    post_url = get_object_or_404(Post, pk=pk)
+# @login_required(login_url='/accounts/login/')
+# def create_comment(request, pk):
+#     post_url = get_object_or_404(Post, pk=pk)
+#
+#     if request.method == 'POST':
+#         form = CommentForm(request.POST)
+#
+#         if form.is_valid():
+#             return redirect(reverse('blog', kwargs={'pk': pk}))
+#
+#     else:
+#         form = CommentForm()
+#
+#     return render(request, 'blog/comment_form.html', {'form': form, 'post_url': post_url})
 
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
 
-        if form.is_valid():
-            return redirect('blog', pk=pk)
+class CreateComment(LoginRequiredMixin, CreateView):
+    model = Comment
+    fields = ['description', ]
 
-    else:
-        form = CommentForm()
+    def get_context_data(self, **kwargs):
+        context = super(CreateComment, self).get_context_data(**kwargs)
+        context['blog'] = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return context
 
-    return render(request, 'blog/comment.html', {'form': form, 'post_url': post_url})
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return super(CreateComment, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('blog', kwargs={'pk': self.kwargs['pk']})

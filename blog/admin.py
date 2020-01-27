@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Author, Comment
+from .models import Post, BlogAuthor, Comment
 
 
 class CommentInline(admin.TabularInline):
@@ -12,7 +12,7 @@ class PostAdmin(admin.ModelAdmin):
     inlines = [CommentInline]
 
 
-@admin.register(Author)
+@admin.register(BlogAuthor)
 class AuthorAdmin(admin.ModelAdmin):
     pass
 
